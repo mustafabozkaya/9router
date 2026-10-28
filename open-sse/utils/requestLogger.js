@@ -14,7 +14,17 @@ async function ensureNodeModules() {
   try {
     fs = await import("fs");
     path = await import("path");
-    LOGS_DIR = path.join(typeof process !== "undefined" && process.cwd ? process.cwd() : ".", "logs");
+    // Resolve the logs base lazily so this module stays importable in
+    // non-Node environments (Worker, Browser) where @/lib/logsDir.js pulls in
+    // node:fs. Falls back to <cwd>/logs if the import is unavailable.
+    let base = path.join(typeof process !== "undefined" && process.cwd ? process.cwd() : ".", "logs");
+    try {
+      const { LOGS_DIR: resolved } = await import("@/lib/logsDir.js");
+      if (resolved) base = resolved;
+    } catch {
+      // Alias unavailable (standalone open-sse usage) — keep the cwd fallback.
+    }
+    LOGS_DIR = base;
   } catch {
     // Running in non-Node environment (Worker, Browser, etc.)
   }
