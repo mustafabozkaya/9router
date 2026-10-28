@@ -36,6 +36,12 @@ const nextConfig = {
   },
   env: {},
   experimental: {
+    // Turbopack's dev filesystem cache writes one 256MB SST blob per invalidation.
+    // `logs/` sits inside the repo and grows on every request, so each new request
+    // invalidated the CSS transform and the cache ballooned to ~10GB in a day
+    // (and the oversized blob deserialization OOM'd the transform worker -> 500 on
+    // every page). Dev restarts are cheap enough without it.
+    turbopackFileSystemCacheForDev: false,
     // #1529/#1572: LLM clients can send long context or base64 image payloads through /v1 rewrites.
     proxyClientMaxBodySize,
     // Cache fetch responses across HMR refreshes for faster dev reloads.

@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import fs from "fs";
 import path from "path";
+import { LOGS_DIR } from "@/lib/logsDir.js";
 
 export async function GET(request) {
   try {
@@ -27,7 +28,7 @@ export async function GET(request) {
       return NextResponse.json({ success: false, error: "Invalid file name" }, { status: 400 });
     }
 
-    const logsDir = path.join(process.cwd(), "logs", "translator");
+    const logsDir = path.join(LOGS_DIR, "translator");
     const filePath = path.join(logsDir, file);
 
     // Check if file exists

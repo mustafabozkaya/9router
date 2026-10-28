@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import fs from "fs";
 import path from "path";
+import { LOGS_DIR } from "@/lib/logsDir.js";
 
 export async function POST(request) {
   try {
@@ -26,7 +27,7 @@ export async function POST(request) {
       return NextResponse.json({ success: false, error: "Invalid file name" }, { status: 400 });
     }
 
-    const logsDir = path.join(process.cwd(), "logs", "translator");
+    const logsDir = path.join(LOGS_DIR, "translator");
     
     // Create directory if not exists
     if (!fs.existsSync(logsDir)) {

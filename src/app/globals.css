@@ -1,5 +1,17 @@
-/* source() sets scan base to src/ for both webpack + Turbopack; auto-detection still skips binaries + gitignore */
-@import "tailwindcss" source("../../");
+/*
+ * source() pins the scan base to src/ for both webpack + Turbopack.
+ *
+ * It MUST stay pointed at src/ — only the dashboard (src/app) contains Tailwind
+ * classes; open-sse/ and cli/ are plain JS with no className usage.
+ *
+ * Do NOT widen this to the repo root ("../../" or "../.."): the request logger
+ * writes a new log folder per request into <repo>/logs, and a repo-root scan
+ * pulls every one of those files into the Tailwind candidate set. Each new log
+ * file then invalidated the CSS transform, which re-wrote the Turbopack dev
+ * cache (~256MB per invalidation) until it reached ~10GB and the oversized
+ * cache deserialization OOM'd the transform worker -> HTTP 500 on every page.
+ */
+@import "tailwindcss" source("../");
 
 @custom-variant dark (&:where(.dark, .dark *));
 
